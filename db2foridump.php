@@ -12,5 +12,7 @@ class db2foridump {
     public function __construct($db2connection) {
         $this->_db2connection = $db2connection;
     }
-
+    
+    public function DumpSchema(string $schema){
+    }
 }
