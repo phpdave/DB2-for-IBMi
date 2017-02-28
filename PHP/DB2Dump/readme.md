@@ -1,3 +1,6 @@
+#What does it do?
+Dumps an entire schema's DB2 for i data objects into SQL source by using QSYS2.GENERATE_SQL.  Also generates insert into statements for the data in the table
+
 #Copy the source to your computer
 1. git clone https://github.com/phpdave/DB2-for-IBMi.git
 
