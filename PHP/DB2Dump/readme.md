@@ -8,8 +8,15 @@
 
 #To Run 
 1. Copy DB2Dump folder under the PHP folder to your machine's htdocs folder and navigate to the index.php page (i.e. for me I have PHP running on Nginx on http://spaces.litmis.com:61184/index.php)
-2. Or go to the command line and do 
+2. Or go to the command line and go to the PHP/DB2Dump folder and run:
 ```
 php index.php
 ```
-to run it
+
+#Output
+1. By default the program outputs the sql dump to the browser with line breaks ```<br>```
+2. You can change the output to a file by calling 
+```
+$dumper->SetOutputType(OutputTypes::_FILE);
+$dumper->SetFileName('/path/to/where/you/want/thesql/dumped.sql');
+```
