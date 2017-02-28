@@ -1,5 +1,5 @@
 #What does it do?
-Dumps an entire schema's DB2 for i data objects (Table,Views,Procedures) into SQL source by using QSYS2.GENERATE_SQL.  Also generates insert into statements for the data in the table.
+Dumps an entire schema's DB2 for i data objects (Table,Views,Procedures) into SQL source by using QSYS2.GENERATE_SQL and generates insert into statements for the data in the tables.
 
 #Copy the source to your computer
 ```sh
