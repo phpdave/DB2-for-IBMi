@@ -29,6 +29,7 @@ class DB2Dump {
     public function CreateDumpsBySchema(string $schema){
         $this->_schema = $schema;
         $this->createTableDump();
+        $this->createTableDataDump();
         $this->createProcedureDump();
         $this->createViewDump();
     }
@@ -44,6 +45,34 @@ class DB2Dump {
             $this->_objectNames[ObjectTypes::_TABLE][] = $row['OBJECT_NAME'];
         }
         $this->generateSQL($this->_objectNames[ObjectTypes::_TABLE], ObjectTypes::_TABLE);
+    }
+    private function createTableDataDump(){
+        foreach($this->_objectNames[ObjectTypes::_TABLE] as $tableName)
+        {
+            //Get Column data to determine if string
+            $arrayIsColumnString=array();
+            $sql="SELECT * FROM QSYS2.COLUMNS WHERE TABLE_SCHEMA=? AND \"TABLE_NAME\"=?";
+            $stmt = db2_prepare($this->_db2Connection, $sql);
+            db2_execute($stmt,[$this->_schema,$tableName]);
+            while ($row = db2_fetch_assoc($stmt)) {
+                $arrayIsColumnString[$row['COLUMN_NAME']]=$row['CHARACTER_MAXIMUM_LENGTH']>0?true:false;
+            }
+            
+            //Create Insert
+            $sql="SELECT * FROM ".$this->_schema.".".$tableName;
+            $stmt = db2_prepare($this->_db2Connection, $sql);
+            db2_execute($stmt,[$this->_schema]);
+            while ($row = db2_fetch_assoc($stmt)) {
+                $columns = implode(",",array_keys($row));
+                $valuesArray = array();
+                foreach(array_keys($row) as $column)
+                {
+                    $valuesArray[] = $arrayIsColumnString[$column]?"'$row[$column]'":$row[$column];
+                }
+                $insertSQL = "INSERT INTO ".$this->_schema.".".$tableName." (".$columns.") VALUES (".implode(",",$valuesArray).");";
+                $this->_outputArray[] = $insertSQL;
+            }
+        }
     }
     
     private function createProcedureDump(){
@@ -113,6 +142,7 @@ class ObjectTypes {
     const _SCHEMA = 'SCHEMA';
     const _SEQUENCE = 'SEQUENCE';
     const _TABLE = 'TABLE';
+    const _TABLEDATA = 'TABLEDATA';
     const _TRIGGER = 'TRIGGER';
     const _TYPE = 'TYPE';
     const _VARIABLE = 'VARIABLE';
